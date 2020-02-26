@@ -1,0 +1,38 @@
+machine atomicStackAbstract
+sees atomicStackContext
+variables
+    bar_in
+    bar_out
+    ret
+    stack
+    test
+
+invariants
+    @bar_in_type bar_in ∈ 0 ‥ nbFloors
+    @bar_out_type bar_out ∈ {1, 0}
+    @ret_type ret ∈ 0 ‥ nbFloors
+    @stack_type stack ∈ 1‥nbFloors → rela ( 1‥nbElemPerFloor  → ELEMENTS)
+events
+    event INITIALISATION
+    then
+        @bar_in_init bar_in ≔ 0
+        @bar_out_init bar_out ≔ 0
+        @ret_init ret ≔ 0
+        @stack_init stack ≔ λp · p ∈ 1‥nbFloors ∣ 1‥nbElemPerFloor × {null}
+    end
+
+    event Bar_in
+    then
+        @act1 
+    end
+
+    // event Bar_out
+    // then
+        
+    // end
+
+    // event Bar_retrait
+    // then
+
+    // end
+end
