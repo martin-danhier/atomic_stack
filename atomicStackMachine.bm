@@ -1,38 +1,85 @@
 machine atomicStackAbstract
 sees atomicStackContext
 variables
-    bar_in
-    bar_out
-    ret
-    stack
-    test
+    working_element // element currently processed
+    bar_in // where the element is going
+    bar_out // is the element going out
+    ret // where is the element coming from
+    stack // data of the stack
 
 invariants
+    // types
+    @working_element_type working_element ∈ ELEMENTS
     @bar_in_type bar_in ∈ 0 ‥ nbFloors
     @bar_out_type bar_out ∈ {1, 0}
     @ret_type ret ∈ 0 ‥ nbFloors
-    @stack_type stack ∈ 1‥nbFloors → rela ( 1‥nbElemPerFloor  → ELEMENTS)
+    @stack_type stack ∈ 1‥nbFloors → ( 1‥nbElemPerFloor  → ELEMENTS)
 events
+
+    // init the machine with default values
     event INITIALISATION
     then
         @bar_in_init bar_in ≔ 0
+        @working_element_init working_element ≔ null
         @bar_out_init bar_out ≔ 0
         @ret_init ret ≔ 0
-        @stack_init stack ≔ λp · p ∈ 1‥nbFloors ∣ 1‥nbElemPerFloor × {null}
+        @stack_init stack ≔ 1‥nbFloors × {1‥nbElemPerFloor × {null}}
     end
 
-    event Bar_in
+    // generate a new working element
+    event Bar_new
+    any element
+    where
+        @element_type element ∈ ELEMENTS ∖ {null}
+        @working_element_available working_element = null 
     then
-        @act1 
+        @generate_element working_element ≔ element 
     end
 
-    // event Bar_out
-    // then
-        
-    // end
+    // Define a destination for the working element
+    event Bar_in
+    any destination_floor
+    where
+        @destination_floor_type destination_floor ∈ 1‥nbFloors
+        @sixth_floor_reserved destination_floor = 6 ⇒ ret ≠ 0
+        @has_a_working_element working_element ≠ null
+    then
+        @set_bar_in bar_in ≔ destination_floor
+    end
 
-    // event Bar_retrait
-    // then
+    // Apply the insertion of a bar
+    event Bar_insert
+    where
+        @something_to_insert bar_in ≠ 0
+        @has_a_working_element working_element ≠ null
+    then
+        @apply stack(bar_in) ≔ stack(bar_in)  {2 ↦ working_element}
+        @clear_bar_in bar_in ≔ 0
+        @clear_ret ret ≔ 0
+        @clear_work_elem working_element ≔ null
+    end
 
-    // end
+    // withdraw a bar from the stack
+    event Bar_withdraw
+    any from_floor
+    where
+        @from_floor_type from_floor ∈ 1‥nbFloors
+        @non_empty_floor stack(from_floor) ▷ (ELEMENTS ∖ {null}) ≠ ∅
+        @has_a_working_element working_element = null
+    then
+        @set_ret ret ≔ from_floor
+        @extract working_element ≔ stack(from_floor)(2)
+        @clear stack(from_floor) ≔ stack(from_floor)  {2 ↦ null}
+    end
+
+    // remove the bar and send it away
+    event Bar_out
+    where
+        @has_a_working_element working_element ≠ null 
+    then
+        @remove working_element ≔ null
+        @clear_ret ret ≔ 0
+    end
+
+
 end
