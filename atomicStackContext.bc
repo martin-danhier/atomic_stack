@@ -1,12 +1,7 @@
 context atomicStackContext
-sets 
-    ELEMENTS
+extends atomicStackAbstractContext
 constants
-    nbFloors
-    cadmium
-    uranium
-    null
+    nbElementsPerFloor
 axioms
-    @nbEtages nbFloors = 6
-    @elements partition(ELEMENTS, {cadmium}, {uranium}, {null})
+    @nb_elem_per_foor nbElementsPerFloor = 2
 end

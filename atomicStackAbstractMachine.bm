@@ -1,5 +1,5 @@
-machine atomicStackAbstract
-sees atomicStackContext
+machine atomicStackAbstractMachine
+sees atomicStackAbstractContext
 variables
     working_element     // Element currently processed
     bar_to              // Where is the element going to

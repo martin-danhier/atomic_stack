@@ -1,0 +1,17 @@
+machine atomicStackMachine
+refines atomicStackAbstractMachine
+sees atomicStackContext
+variables
+    working_element
+    bar_to
+    bar_from
+    stack
+invariants
+    @stack_type stack ∈ 1‥nbFloors → (1‥nbElementsPerFloor → ELEMENTS) 
+events
+    event INITIALISATION extends b
+    then
+        @stack_init_override stack ≔ 1‥nbFloors × (1‥nbElementsPerFloor × {null})
+    end
+
+end
