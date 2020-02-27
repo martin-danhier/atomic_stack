@@ -50,13 +50,6 @@ events
         @lift_down lift = 0
     end
 
-    // event Bar_test refines Bar_in
-    // with
-    //     @destination_floor destination_floor = lift
-    // then
-    //     @set_bar_to bar_to ≔ lift
-    // end
-
     event Bar_in extends Bar_in
     where
         @current_floor destination_floor = lift
