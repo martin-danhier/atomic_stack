@@ -1,7 +1,0 @@
-context atomicStackContext
-extends atomicStackAbstractContext
-constants
-    nbElementsPerFloor
-axioms
-    @nb_elem_per_foor nbElementsPerFloor = 2
-end

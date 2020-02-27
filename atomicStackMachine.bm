@@ -6,12 +6,13 @@ variables
     bar_to
     bar_from
     stack
+    bob
 invariants
-    @stack_type stack ∈ 1‥nbFloors → (1‥nbElementsPerFloor → ELEMENTS) 
+    @stack_type bob ∈ BOOL
 events
-    event INITIALISATION extends b
+    event INITIALISATION extends _
     then
-        @stack_init_override stack ≔ 1‥nbFloors × (1‥nbElementsPerFloor × {null})
+        @stack_init_override bob ≔ FALSE
     end
 
 end
