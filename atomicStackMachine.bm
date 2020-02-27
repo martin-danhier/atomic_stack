@@ -4,13 +4,13 @@ sees atomicStackContext
 variables
     // Extended variables
     bar_from            // Where is the element going to 
-    bar_to              // Where is the element coming from
+    barTo              // Where is the element coming from
     // New variables
     workingElement     // Handled element
     stack               // Advanced stack : contains the position and the type of the elements
 invariants
     // Types
-    @bar_to_type bar_to ∈ 0 ‥ nbFloors
+    @barTo_type barTo ∈ 0 ‥ nbFloors
     @bar_from_type bar_from ∈ 0 ‥ nbFloors
     @stack_type stack ∈ 1‥nbFloors → (1‥nbElementsPerFloor → ELEMENTS)
     @workingElement_type workingElement ∈ ELEMENTS
@@ -22,7 +22,7 @@ invariants
 events
     event INITIALISATION refines INITIALISATION
     then
-        @bar_to_init bar_to ≔ 0
+        @barTo_init barTo ≔ 0
         @bar_from_init bar_from ≔ 0
         @workingElement_init workingElement ≔ null
         @stack_init stack ≔ 1‥nbFloors × {1‥nbElementsPerFloor × {null}}
@@ -46,20 +46,20 @@ events
         @destination_floor_type destination_floor ∈ 1‥nbFloors
         @has_a_workingElement workingElement ≠ null
         @last_floor_reserved destination_floor = 6 ⇒ bar_from ≠ 0
-        @not_already_set bar_to = 0
+        @not_already_set barTo = 0
         @room_left_on_that_floor stack(destination_floor) ▷ {null} ≠ ∅
     then
-        @set_bar_to bar_to ≔ destination_floor
+        @set_barTo barTo ≔ destination_floor
     end
 
     // Apply the insertion of a bar
     event Bar_insert refines Bar_insert
     where
-        @something_to_insert bar_to ≠ 0
+        @something_to_insert barTo ≠ 0
         @has_a_workingElement workingElement ≠ null
     then
-        @insert stack(bar_to) ≔ stack(bar_to)  {(nbElementsPerFloor - card(stack(bar_to) ⩥ {null}) ↦ workingElement)}
-        @clear_bar_to bar_to ≔ 0
+        @insert stack(barTo) ≔ stack(barTo)  {(nbElementsPerFloor - card(stack(barTo) ⩥ {null}) ↦ workingElement)}
+        @clear_barTo barTo ≔ 0
         @clear_bar_from bar_from ≔ 0
         @clear_workingElement workingElement ≔ null
     end
@@ -81,7 +81,7 @@ events
     // Remove the bar and send it away
     event Bar_out refines Bar_out
     where
-        @not_already_going_somewhere bar_to = 0
+        @not_already_going_somewhere barTo = 0
         @has_a_workingElement workingElement ≠ null
     then    
         @clear_bar_from bar_from ≔ 0

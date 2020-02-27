@@ -4,72 +4,74 @@ sees atomicStackContext
 variables
     // Extended variables
     bar_from            // Where is the element going to 
-    bar_to              // Where is the element coming from
+    barTo              // Where is the element coming from
     workingElement     // Handled element
     stack               // Advanced stack : contains the position and the type of the elements
     // New variable
-    lift                // Lift carrying the working element
+    elementLift                // Lift carrying the working element
 invariants
-    @lift_type lift ∈ 0 ‥ nbFloors 
+    @elementLift_type elementLift ∈ 0 ‥ nbFloors 
 events
     event INITIALISATION extends INITIALISATION
     then
-        @lift_init lift ≔ 0
+        @elementLift_init elementLift ≔ 0
     end
 
-    // raise the lift
+    // raise the elementLift
     event Lift_up
     where
-        @not_top lift < nbFloors
+        @not_top elementLift < nbFloors
+        @lock_when_inserting barTo = 0
     then
-        @set_lift lift ≔ lift + 1
+        @set_elementLift elementLift ≔ elementLift + 1
     end
 
-    // set the lift to a specific floor
-    event Lift_set
-    any to_floor
-    where
-        @to_floor_type to_floor ∈ 0 ‥ nbFloors
-        @not_there_already to_floor ≠ lift
-    then
-        @set_lift lift ≔ to_floor
-    end
+    // // set the elementLift to a specific floor
+    // event Lift_set
+    // any to_floor
+    // where
+    //     @to_floor_type to_floor ∈ 0 ‥ nbFloors
+    //     @not_there_already to_floor ≠ elementLift
+    // then
+    //     @set_elementLift elementLift ≔ to_floor
+    // end
 
 
-    // lower the lift
+    // lower the elementLift
     event Lift_down
     where
-        @not_top lift > 0
+        @not_top elementLift > 0
+        @lock_when_inserting barTo = 0
     then
-        @set_lift lift ≔ lift - 1
+        @set_elementLift elementLift ≔ elementLift - 1
     end
 
     // Generate a new working element
     event Bar_new extends Bar_new
     where
-        @lift_down lift = 0
+        @elementLift_down elementLift = 0
     end
 
     event Bar_in extends Bar_in
     where
-        @current_floor destination_floor = lift
+        @current_floor destination_floor = elementLift
     end
 
     // Apply the insertion of a bar
     event Bar_insert extends Bar_insert
     where
-        @lift_in_the_right_floor lift = bar_to
+        @elementLift_in_the_right_floor elementLift = barTo
     end
 
     // Withdraw a bar from the stack
     event Bar_withdraw extends Bar_withdraw
     where
-        @lift_in_the_right_floor lift = from_floor
+        @elementLift_in_the_right_floor elementLift = from_floor
     end
 
     // Remove the bar and send it away
     event Bar_out extends Bar_out
     where
-        @lift_down lift = 0
+        @elementLift_down elementLift = 0
     end
 end

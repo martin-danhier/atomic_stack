@@ -1,27 +1,27 @@
 machine atomicStackAbstractMachine
 sees atomicStackAbstractContext
 variables
-    bar_to              // Where is the element going to
+    barTo              // Where is the element going to
     bar_from            // Where is the element coming from
     handling_element    // Is an element being handled ?
     simple_stack        // Simplified stack : only contains the number of element in each floor
 
 invariants
     // Types
-    @bar_to_type bar_to ∈ 0 ‥ nbFloors
+    @barTo_type barTo ∈ 0 ‥ nbFloors
     @bar_from_type bar_from ∈ 0 ‥ nbFloors
     @handling_element_type handling_element ∈ BOOL
     @simple_stack_type simple_stack ∈ 1‥nbFloors → 0‥nbElementsPerFloor
     // Last floor is reserved
-    @last_floor_reserved ¬(bar_to = nbFloors ∧ bar_from = 0)
+    @last_floor_reserved ¬(barTo = nbFloors ∧ bar_from = 0)
     // It is impossible to place an element where there is already an element
-    @place_elements_in_empty_spots bar_to = 0 ∨ simple_stack(bar_to) < nbElementsPerFloor
+    @place_elements_in_empty_spots barTo = 0 ∨ simple_stack(barTo) < nbElementsPerFloor
 events
 
     // Init the machine with default values
     event INITIALISATION
     then
-        @bar_to_init bar_to ≔ 0
+        @barTo_init barTo ≔ 0
         @bar_from_init bar_from ≔ 0
         @handling_element_init handling_element ≔ FALSE
         @simple_stack_init simple_stack ≔ 1‥nbFloors × {0}
@@ -30,9 +30,9 @@ events
     // Create an element
     event Bar_new
     where
-        @not_already_a_workingElement1 bar_to = 0
-        @not_already_a_workingElement2 bar_from = 0
-        @not_already_a_workingElement3 handling_element = FALSE
+        @not_already_a_working_element1 barTo = 0
+        @not_already_a_working_element2 bar_from = 0
+        @not_already_a_working_element3 handling_element = FALSE
     then
         @set_handling_element handling_element ≔ TRUE
     end
@@ -45,19 +45,19 @@ events
         @last_floor_reserved destination_floor = 6 ⇒ bar_from ≠ 0
         @has_a_element_handled handling_element = TRUE
         @room_left_on_that_floor simple_stack(destination_floor) < nbElementsPerFloor
-        @not_already_set bar_to = 0
+        @not_already_set barTo = 0
     then
-        @set_bar_to bar_to ≔ destination_floor 
+        @set_barTo barTo ≔ destination_floor 
     end
 
     // Apply the insertion of a bar
     event Bar_insert
     where
-        @something_to_insert bar_to ≠ 0
+        @something_to_insert barTo ≠ 0
         @something_to_insert2 handling_element = TRUE     
     then
-        @apply simple_stack(bar_to) ≔ simple_stack(bar_to) + 1
-        @clear_bar_to bar_to ≔ 0
+        @apply simple_stack(barTo) ≔ simple_stack(barTo) + 1
+        @clear_barTo barTo ≔ 0
         @clear_bar_from bar_from ≔ 0
         @clear_handling_element handling_element ≔ FALSE
     end
@@ -78,7 +78,7 @@ events
     // Remove the bar and send it away
     event Bar_out
     where
-        @not_already_going_somewhere bar_to = 0
+        @not_already_going_somewhere barTo = 0
         @has_something_to_throw handling_element = TRUE
     then
         @clear_bar_from bar_from ≔ 0
