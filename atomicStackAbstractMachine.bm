@@ -1,41 +1,40 @@
 machine atomicStackAbstractMachine
-sees atomicStackContext
+sees atomicStackAbstractContext
 variables
-    working_element     // Element currently processed
     bar_to              // Where is the element going to
     bar_from            // Where is the element coming from
-    stack               // Data of the stack
+    handling_element    // Is an element being handled ?
+    simple_stack        // Simplified stack : only contains the number of element in each floor
 
 invariants
     // Types
-    @working_element_type working_element ∈ ELEMENTS
     @bar_to_type bar_to ∈ 0 ‥ nbFloors
     @bar_from_type bar_from ∈ 0 ‥ nbFloors
-    @stack_type stack ∈ 1‥nbFloors → (1‥nbElementsPerFloor → ELEMENTS)
+    @handling_element_type handling_element ∈ BOOL
+    @simple_stack_type simple_stack ∈ 1‥nbFloors → 0‥nbElementsPerFloor
     // Last floor is reserved
     @last_floor_reserved ¬(bar_to = nbFloors ∧ bar_from = 0)
     // It is impossible to place an element where there is already an element
-    @place_elements_in_empty_spots bar_to = 0 ∨ stack(bar_to) ⩥ {null} = ∅
+    @place_elements_in_empty_spots bar_to = 0 ∨ simple_stack(bar_to) < nbElementsPerFloor
 events
 
     // Init the machine with default values
     event INITIALISATION
     then
         @bar_to_init bar_to ≔ 0
-        @working_element_init working_element ≔ null
         @bar_from_init bar_from ≔ 0
-        @stack_init stack ≔ 1‥nbFloors × {1‥nbElementsPerFloor × {null}}
+        @handling_element_init handling_element ≔ FALSE
+        @simple_stack_init simple_stack ≔ 1‥nbFloors × {0}
     end
 
-    // Generate a new working element
+    // Create an element
     event Bar_new
-    any element
     where
-        @element_type element ∈ ELEMENTS ∖ {null}
-        @working_element_available working_element = null
-        @last_floor_must_be_empty stack(nbFloors) ⩥ {null} = ∅
+        @not_already_a_working_element1 bar_to = 0
+        @not_already_a_working_element2 bar_from = 0
+        @not_already_a_working_element3 handling_element = FALSE
     then
-        @generate_element working_element ≔ element 
+        @set_handling_element handling_element ≔ TRUE
     end
 
     // Define a destination for the working element
@@ -44,8 +43,8 @@ events
     where
         @destination_floor_type destination_floor ∈ 1‥nbFloors
         @last_floor_reserved destination_floor = 6 ⇒ bar_from ≠ 0
-        @has_a_working_element working_element ≠ null
-        @room_left_on_that_floor stack(destination_floor) ▷ {null} ≠ ∅
+        @has_a_element_handled handling_element = TRUE
+        @room_left_on_that_floor simple_stack(destination_floor) < nbElementsPerFloor
     then
         @set_bar_to bar_to ≔ destination_floor
     end
@@ -54,12 +53,12 @@ events
     event Bar_insert
     where
         @something_to_insert bar_to ≠ 0
-        @has_a_working_element working_element ≠ null
+        @something_to_insert2 handling_element = TRUE     
     then
-        @apply stack(bar_to) ≔ stack(bar_to)  {(2 ↦ working_element)}
+        @apply simple_stack(bar_to) ≔ simple_stack(bar_to) + 1
         @clear_bar_to bar_to ≔ 0
         @clear_bar_from bar_from ≔ 0
-        @clear_work_elem working_element ≔ null
+        @clear_handling_element handling_element ≔ FALSE
     end
 
     // Withdraw a bar from the stack
@@ -67,21 +66,21 @@ events
     any from_floor
     where
         @from_floor_type from_floor ∈ 1‥nbFloors
-        @non_empty_floor stack(from_floor) ⩥ {null} ≠ ∅
-        @has_a_working_element working_element = null
+        @non_empty_floor simple_stack(from_floor) > 0
+        @not_already_withdrawing bar_from = 0
     then
         @set_bar_from bar_from ≔ from_floor
-        @extract working_element ≔ stack(from_floor)(2)
-        @clear stack(from_floor) ≔ stack(from_floor)  {(2 ↦ null)}
+        @set_handling_element handling_element ≔ TRUE
+        @clear simple_stack(from_floor) ≔ simple_stack(from_floor) - 1
     end
 
     // Remove the bar and send it away
     event Bar_out
     where
-        @has_a_working_element working_element ≠ null
         @not_already_going_somewhere bar_to = 0
+        @has_something_to_throw handling_element = TRUE
     then
-        @remove working_element ≔ null
         @clear_bar_from bar_from ≔ 0
+        @clear_handling_element handling_element ≔ FALSE
     end
 end

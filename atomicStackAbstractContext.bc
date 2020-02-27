@@ -1,14 +1,8 @@
-context atomicStackContext
-sets 
-    ELEMENTS
+context atomicStackAbstractContext
 constants
     nbFloors
     nbElementsPerFloor
-    cadmium
-    uranium
-    null
 axioms
     @nbEtages nbFloors = 6
     @nb_elem_per_foor nbElementsPerFloor = 2
-    @elements partition(ELEMENTS, {cadmium}, {uranium}, {null})
 end

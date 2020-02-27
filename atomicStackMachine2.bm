@@ -1,0 +1,4 @@
+machine atomicStackMachine2
+refines atomicStackMachine
+sees atomicStackContext
+end

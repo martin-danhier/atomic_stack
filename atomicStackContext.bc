@@ -1,0 +1,10 @@
+context atomicStackContext
+extends atomicStackAbstractContext
+sets ELEMENTS
+constants
+    cadmium
+    uranium
+    null
+axioms
+    @axm1 partition(ELEMENTS, {cadmium}, {uranium}, {null})
+end
