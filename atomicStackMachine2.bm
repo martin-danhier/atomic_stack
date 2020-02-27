@@ -5,7 +5,7 @@ variables
     // Extended variables
     bar_from            // Where is the element going to 
     bar_to              // Where is the element coming from
-    working_element     // Handled element
+    workingElement     // Handled element
     stack               // Advanced stack : contains the position and the type of the elements
     // New variable
     lift                // Lift carrying the working element

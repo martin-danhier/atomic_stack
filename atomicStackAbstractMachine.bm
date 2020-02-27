@@ -30,9 +30,9 @@ events
     // Create an element
     event Bar_new
     where
-        @not_already_a_working_element1 bar_to = 0
-        @not_already_a_working_element2 bar_from = 0
-        @not_already_a_working_element3 handling_element = FALSE
+        @not_already_a_workingElement1 bar_to = 0
+        @not_already_a_workingElement2 bar_from = 0
+        @not_already_a_workingElement3 handling_element = FALSE
     then
         @set_handling_element handling_element ≔ TRUE
     end

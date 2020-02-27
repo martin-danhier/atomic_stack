@@ -6,16 +6,16 @@ variables
     bar_from            // Where is the element going to 
     bar_to              // Where is the element coming from
     // New variables
-    working_element     // Handled element
+    workingElement     // Handled element
     stack               // Advanced stack : contains the position and the type of the elements
 invariants
     // Types
     @bar_to_type bar_to ∈ 0 ‥ nbFloors
     @bar_from_type bar_from ∈ 0 ‥ nbFloors
     @stack_type stack ∈ 1‥nbFloors → (1‥nbElementsPerFloor → ELEMENTS)
-    @working_element_type working_element ∈ ELEMENTS
+    @workingElement_type workingElement ∈ ELEMENTS
     // Gluing
-    @gluing_element working_element ≠ null ⇔ handling_element = TRUE
+    @gluing_element workingElement ≠ null ⇔ handling_element = TRUE
     @gluing_stack ∀floor · floor ∈ dom(stack) ⇒ simple_stack(floor) = card(stack(floor) ⩥ {null}) 
     // In the stack, elements must always be as on the right as possible
     @elements_always_on_the_right ∀floor · floor ∈ ran(stack) ⇒ (∀elem · elem ∈ dom(floor) ∖ {nbElementsPerFloor} ⇒ (floor(elem) ≠ null ⇒ floor(elem + 1) ≠ null))
@@ -24,7 +24,7 @@ events
     then
         @bar_to_init bar_to ≔ 0
         @bar_from_init bar_from ≔ 0
-        @working_element_init working_element ≔ null
+        @workingElement_init workingElement ≔ null
         @stack_init stack ≔ 1‥nbFloors × {1‥nbElementsPerFloor × {null}}
     end
 
@@ -33,10 +33,10 @@ events
     any element
     where
         @element_type element ∈ ELEMENTS ∖ {null}
-        @working_element_available working_element = null
+        @workingElement_available workingElement = null
         @last_floor_must_be_empty stack(nbFloors) ⩥ {null} = ∅
     then
-        @generate_element working_element ≔ element 
+        @generate_element workingElement ≔ element 
     end
 
     // Define a destination for the working element
@@ -44,7 +44,7 @@ events
     any destination_floor
     where
         @destination_floor_type destination_floor ∈ 1‥nbFloors
-        @has_a_working_element working_element ≠ null
+        @has_a_workingElement workingElement ≠ null
         @last_floor_reserved destination_floor = 6 ⇒ bar_from ≠ 0
         @not_already_set bar_to = 0
         @room_left_on_that_floor stack(destination_floor) ▷ {null} ≠ ∅
@@ -56,12 +56,12 @@ events
     event Bar_insert refines Bar_insert
     where
         @something_to_insert bar_to ≠ 0
-        @has_a_working_element working_element ≠ null
+        @has_a_workingElement workingElement ≠ null
     then
-        @insert stack(bar_to) ≔ stack(bar_to)  {(nbElementsPerFloor - card(stack(bar_to) ⩥ {null}) ↦ working_element)}
+        @insert stack(bar_to) ≔ stack(bar_to)  {(nbElementsPerFloor - card(stack(bar_to) ⩥ {null}) ↦ workingElement)}
         @clear_bar_to bar_to ≔ 0
         @clear_bar_from bar_from ≔ 0
-        @clear_working_element working_element ≔ null
+        @clear_workingElement workingElement ≔ null
     end
 
     // Withdraw a bar from the stack
@@ -71,9 +71,9 @@ events
         @from_floor_type from_floor ∈ 1‥nbFloors
         @non_empty_floor stack(from_floor) ⩥ {null} ≠ ∅
         @not_already_withdrawing bar_from = 0
-        @no_working_element working_element = null
+        @no_workingElement workingElement = null
     then
-        @extract working_element ≔ stack(from_floor)(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1)
+        @extract workingElement ≔ stack(from_floor)(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1)
         @set_bar_from bar_from ≔ from_floor
         @clear stack(from_floor) ≔ stack(from_floor)  {(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1 ↦ null)}
     end
@@ -82,10 +82,10 @@ events
     event Bar_out refines Bar_out
     where
         @not_already_going_somewhere bar_to = 0
-        @has_a_working_element working_element ≠ null
+        @has_a_workingElement workingElement ≠ null
     then    
         @clear_bar_from bar_from ≔ 0
-        @remove working_element ≔ null
+        @remove workingElement ≔ null
     end
     
 end
