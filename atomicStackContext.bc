@@ -3,12 +3,10 @@ sets
     ELEMENTS
 constants
     nbFloors
-    nbElemPerFloor
     cadmium
     uranium
     null
 axioms
     @nbEtages nbFloors = 6
-    @nbElemPerFloor nbElemPerFloor = 2
     @elements partition(ELEMENTS, {cadmium}, {uranium}, {null})
 end
