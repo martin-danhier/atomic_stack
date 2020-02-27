@@ -5,26 +5,31 @@ variables
     // Extended variables
     bar_from            // Where is the element going to 
     bar_to              // Where is the element coming from
-    handling_element    // Is an element being handled ?
-    simple_stack        // Simplified stack : only contains the number of element in each floor
     // New variables
     working_element     // Handled element
     stack               // Advanced stack : contains the position and the type of the elements
 invariants
     // Types
+    @bar_to_type bar_to ∈ 0 ‥ nbFloors
+    @bar_from_type bar_from ∈ 0 ‥ nbFloors
     @stack_type stack ∈ 1‥nbFloors → (1‥nbElementsPerFloor → ELEMENTS)
     @working_element_type working_element ∈ ELEMENTS
+    // Gluing
+    @gluing_element working_element ≠ null ⇔ handling_element = TRUE
+    @gluing_stack ∀floor · floor ∈ dom(stack) ⇒ simple_stack(floor) = card(stack(floor) ⩥ {null}) 
     // In the stack, elements must always be as on the right as possible
     @elements_always_on_the_right ∀floor · floor ∈ ran(stack) ⇒ (∀elem · elem ∈ dom(floor) ∖ {nbElementsPerFloor} ⇒ (floor(elem) ≠ null ⇒ floor(elem + 1) ≠ null))
 events
-    event INITIALISATION extends INITIALISATION
+    event INITIALISATION refines INITIALISATION
     then
+        @bar_to_init bar_to ≔ 0
+        @bar_from_init bar_from ≔ 0
         @working_element_init working_element ≔ null
         @stack_init stack ≔ 1‥nbFloors × {1‥nbElementsPerFloor × {null}}
     end
 
     // Generate a new working element
-    event Bar_new extends Bar_new
+    event Bar_new refines Bar_new
     any element
     where
         @element_type element ∈ ELEMENTS ∖ {null}
@@ -35,36 +40,51 @@ events
     end
 
     // Define a destination for the working element
-    event Bar_in extends Bar_in
+    event Bar_in refines Bar_in
+    any destination_floor
     where
+        @destination_floor_type destination_floor ∈ 1‥nbFloors
         @has_a_working_element working_element ≠ null
-        @room_left_on_that_floor2 stack(destination_floor) ▷ {null} ≠ ∅
+        @last_floor_reserved destination_floor = 6 ⇒ bar_from ≠ 0
+        @not_already_set bar_to = 0
+        @room_left_on_that_floor stack(destination_floor) ▷ {null} ≠ ∅
+    then
+        @set_bar_to bar_to ≔ destination_floor
     end
 
     // Apply the insertion of a bar
-    event Bar_insert extends Bar_insert
+    event Bar_insert refines Bar_insert
     where
+        @something_to_insert bar_to ≠ 0
         @has_a_working_element working_element ≠ null
     then
-        @insert stack(bar_to) ≔ stack(bar_to)  {(nbElementsPerFloor - simple_stack(bar_to) ↦ working_element)}
+        @insert stack(bar_to) ≔ stack(bar_to)  {(nbElementsPerFloor - card(stack(bar_to) ⩥ {null}) ↦ working_element)}
+        @clear_bar_to bar_to ≔ 0
+        @clear_bar_from bar_from ≔ 0
         @clear_working_element working_element ≔ null
     end
 
     // Withdraw a bar from the stack
-    event Bar_withdraw extends Bar_withdraw
+    event Bar_withdraw refines Bar_withdraw
+    any from_floor
     where
-        @non_empty_floor2 stack(from_floor) ⩥ {null} ≠ ∅
-        @has_a_working_element working_element = null
+        @from_floor_type from_floor ∈ 1‥nbFloors
+        @non_empty_floor stack(from_floor) ⩥ {null} ≠ ∅
+        @not_already_withdrawing bar_from = 0
+        @no_working_element working_element = null
     then
-        @extract working_element ≔ stack(from_floor)(nbElementsPerFloor - simple_stack(from_floor) + 1)
-        @clear2 stack(from_floor) ≔ stack(from_floor)  {(nbElementsPerFloor - simple_stack(from_floor) + 1 ↦ null)}
+        @extract working_element ≔ stack(from_floor)(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1)
+        @set_bar_from bar_from ≔ from_floor
+        @clear stack(from_floor) ≔ stack(from_floor)  {(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1 ↦ null)}
     end
 
     // Remove the bar and send it away
-    event Bar_out extends Bar_out
+    event Bar_out refines Bar_out
     where
+        @not_already_going_somewhere bar_to = 0
         @has_a_working_element working_element ≠ null
-    then
+    then    
+        @clear_bar_from bar_from ≔ 0
         @remove working_element ≔ null
     end
     

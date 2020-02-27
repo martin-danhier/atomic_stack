@@ -1,4 +1,82 @@
 machine atomicStackMachine2
 refines atomicStackMachine
 sees atomicStackContext
+variables
+    // Extended variables
+    bar_from            // Where is the element going to 
+    bar_to              // Where is the element coming from
+    working_element     // Handled element
+    stack               // Advanced stack : contains the position and the type of the elements
+    // New variable
+    lift                // Lift carrying the working element
+invariants
+    @lift_type lift ∈ 0 ‥ nbFloors 
+events
+    event INITIALISATION extends INITIALISATION
+    then
+        @lift_init lift ≔ 0
+    end
+
+    // raise the lift
+    event Lift_up
+    where
+        @not_top lift < nbFloors
+    then
+        @set_lift lift ≔ lift + 1
+    end
+
+    // set the lift to a specific floor
+    event Lift_set
+    any to_floor
+    where
+        @to_floor_type to_floor ∈ 0 ‥ nbFloors
+        @not_there_already to_floor ≠ lift
+    then
+        @set_lift lift ≔ to_floor
+    end
+
+
+    // lower the lift
+    event Lift_down
+    where
+        @not_top lift > 0
+    then
+        @set_lift lift ≔ lift - 1
+    end
+
+    // Generate a new working element
+    event Bar_new extends Bar_new
+    where
+        @lift_down lift = 0
+    end
+
+    // event Bar_test refines Bar_in
+    // with
+    //     @destination_floor destination_floor = lift
+    // then
+    //     @set_bar_to bar_to ≔ lift
+    // end
+
+    event Bar_in extends Bar_in
+    where
+        @current_floor destination_floor = lift
+    end
+
+    // Apply the insertion of a bar
+    event Bar_insert extends Bar_insert
+    where
+        @lift_in_the_right_floor lift = bar_to
+    end
+
+    // Withdraw a bar from the stack
+    event Bar_withdraw extends Bar_withdraw
+    where
+        @lift_in_the_right_floor lift = from_floor
+    end
+
+    // Remove the bar and send it away
+    event Bar_out extends Bar_out
+    where
+        @lift_down lift = 0
+    end
 end

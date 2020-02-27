@@ -45,8 +45,9 @@ events
         @last_floor_reserved destination_floor = 6 ⇒ bar_from ≠ 0
         @has_a_element_handled handling_element = TRUE
         @room_left_on_that_floor simple_stack(destination_floor) < nbElementsPerFloor
+        @not_already_set bar_to = 0
     then
-        @set_bar_to bar_to ≔ destination_floor
+        @set_bar_to bar_to ≔ destination_floor 
     end
 
     // Apply the insertion of a bar
