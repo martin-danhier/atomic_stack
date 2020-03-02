@@ -9,12 +9,21 @@ variables
     stack               // Advanced stack : contains the position and the type of the elements
     // New variable
     elementLift                // Lift carrying the working element
+    beltIn
+    beltOut
+    elementOnLift
 invariants
-    @elementLift_type elementLift ∈ 0 ‥ nbFloors 
+    @elementLift_type elementLift ∈ 0 ‥ nbFloors
+    @beltIn_type beltIn ∈ {1,2} → ELEMENTS
+    @beltOut_type beltOut ∈ {1,2} → ELEMENTS
+    @elementOnLift_type elementOnLift ∈ ELEMENTS
 events
     event INITIALISATION extends INITIALISATION
     then
         @elementLift_init elementLift ≔ 0
+        @beltIn_init beltIn ≔ {1,2} × {null}
+        @beltOut_init beltOut ≔ {1,2} × {null}
+        @elementOnLift_init elementOnLift ≔ null
     end
 
     // raise the elementLift
@@ -26,17 +35,6 @@ events
         @set_elementLift elementLift ≔ elementLift + 1
     end
 
-    // // set the elementLift to a specific floor
-    // event Lift_set
-    // any to_floor
-    // where
-    //     @to_floor_type to_floor ∈ 0 ‥ nbFloors
-    //     @not_there_already to_floor ≠ elementLift
-    // then
-    //     @set_elementLift elementLift ≔ to_floor
-    // end
-
-
     // lower the elementLift
     event Lift_down
     where
@@ -46,32 +44,67 @@ events
         @set_elementLift elementLift ≔ elementLift - 1
     end
 
-    // Generate a new working element
-    event Bar_new extends Bar_new
+    event BeltIn_roll
+    where
+        @something_on_the_belt beltIn(1) ≠ null ∨ beltIn(2) ≠ null
+        @lift_down beltIn(2) ≠ null ⇒ elementLift = 0
+    then
+        @act1 beltIn ≔ { (1 ↦ null), (2 ↦ beltIn(1))}
+        @act2 elementOnLift ≔ beltIn(2)
+    end
+
+    event Send_out
     where
         @elementLift_down elementLift = 0
+        @elementOnLift elementOnLift ≠ null 
+    then
+        @set_onLift elementOnLift ≔ null
+        @set_outBelt beltOut(1) ≔ elementOnLift 
+    end
+
+    // Roll the right conveyor belt
+    event BeltOut_roll
+    where
+        @lift_down beltOut(1) ≠ null
+    then
+        @act1 beltOut ≔ { (1 ↦ elementOnLift), (2 ↦ beltOut(1))}
+        @act2 elementOnLift ≔ null
+    end
+
+    // Remove the bar and send it away
+    event Bar_out extends Bar_out
+    where
+        @elementLift_down beltOut(2) ≠ null
+    then
+        @set_outBelt beltOut(2) ≔ null 
+    end
+
+    // Generate a new working element
+    event Bar_new extends Bar_new
+    then
+        @set_beltIn beltIn(1) ≔ element
     end
 
     event Bar_in extends Bar_in
     where
         @current_floor destination_floor = elementLift
+        @element_on_lift elementOnLift ≠ null
     end
 
     // Apply the insertion of a bar
     event Bar_insert extends Bar_insert
     where
         @elementLift_in_the_right_floor elementLift = barTo
+    then
+        @set_onLift elementOnLift ≔ null
     end
 
     // Withdraw a bar from the stack
     event Bar_withdraw extends Bar_withdraw
     where
         @elementLift_in_the_right_floor elementLift = from_floor
+    then
+        @set_onLift elementOnLift ≔ stack(from_floor)(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1)
     end
 
-    // Remove the bar and send it away
-    event Bar_out extends Bar_out
-    where
-        @elementLift_down elementLift = 0
-    end
 end

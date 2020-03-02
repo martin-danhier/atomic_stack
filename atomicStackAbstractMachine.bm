@@ -33,6 +33,7 @@ events
         @not_already_a_working_element1 barTo = 0
         @not_already_a_working_element2 bar_from = 0
         @not_already_a_working_element3 handling_element = FALSE
+        @last_floor_must_be_empty simple_stack(nbFloors) = 0
     then
         @set_handling_element handling_element ≔ TRUE
     end
