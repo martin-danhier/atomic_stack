@@ -18,7 +18,7 @@ invariants
     @gluing_element workingElement ≠ null ⇔ handling_element = TRUE
     @gluing_stack ∀floor · floor ∈ dom(stack) ⇒ simple_stack(floor) = card(stack(floor) ⩥ {null}) 
     // In the stack, elements must always be as on the right as possible
-    @elements_always_on_the_right ∀floor · floor ∈ ran(stack) ⇒ (∀elem · elem ∈ dom(floor) ∖ {nbElementsPerFloor} ⇒ (floor(elem) ≠ null ⇒ floor(elem + 1) ≠ null))
+    @elements_always_on_the_right ∀floor · floor ∈ dom(stack) ⇒ (∀elem · elem ∈ dom(stack(floor)) ∖ {nbElementsPerFloor} ⇒ (stack(floor)(elem) ≠ null ⇒ stack(floor)(elem + 1) ≠ null))
 events
     event INITIALISATION refines INITIALISATION
     then
