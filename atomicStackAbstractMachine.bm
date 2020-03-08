@@ -48,7 +48,7 @@ events
         @room_left_on_that_floor simple_stack(destination_floor) < nbElementsPerFloor
         @not_already_set barTo = 0
     then
-        @set_barTo barTo ≔ destination_floor 
+        @set_barTo barTo ≔ destination_floor
     end
 
     // Apply the insertion of a bar
@@ -69,7 +69,7 @@ events
     where
         @from_floor_type from_floor ∈ 1‥nbFloors
         @non_empty_floor simple_stack(from_floor) > 0
-        @not_already_withdrawing bar_from = 0
+        @not_handling_element handling_element = FALSE
     then
         @set_bar_from bar_from ≔ from_floor
         @set_handling_element handling_element ≔ TRUE
