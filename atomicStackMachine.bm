@@ -32,6 +32,8 @@ events
     event Bar_new refines Bar_new
     any element
     where
+        @not_already_a_working_element1 barTo = 0
+        @not_already_a_working_element2 bar_from = 0
         @element_type element ∈ ELEMENTS ∖ {null}
         @workingElement_available workingElement = null
         @last_floor_must_be_empty stack(nbFloors) ⩥ {null} = ∅
