@@ -2574,14 +2574,14 @@
               </de.bmotionstudio.gef.editor.observer.SetAttributeObject>
               <de.bmotionstudio.gef.editor.observer.SetAttributeObject>
                 <type>#PREDICATE</type>
-                <eval>elementOnLift = null ∨ elementLift = 0 ∨ (elementLift = 6  ∧ bar_from = 0) ∨ stack(elementLift) ▷ {null} = ∅ </eval>
+                <eval>elementOnLift = null ∨ elementLift = 0 ∨ (elementLift = 6  ∧ barFrom = 0) ∨ stack(elementLift) ▷ {null} = ∅ </eval>
                 <value class="boolean">false</value>
                 <attribute>de.bmotionstudio.gef.editor.attribute.BAttributeEnabled</attribute>
                 <isExpressionMode>false</isExpressionMode>
               </de.bmotionstudio.gef.editor.observer.SetAttributeObject>
               <de.bmotionstudio.gef.editor.observer.SetAttributeObject>
                 <type>#PREDICATE</type>
-                <eval>elementOnLift ≠ null ∧ elementLift &gt; 0  ∧ (elementLift = 6 ⇒ bar_from ≠ 0) ∧ stack(destination_floor) ▷ {null} ≠ ∅ </eval>
+                <eval>elementOnLift ≠ null ∧ elementLift &gt; 0  ∧ (elementLift = 6 ⇒ barFrom ≠ 0) ∧ stack(destination_floor) ▷ {null} ≠ ∅ </eval>
                 <value class="boolean">true</value>
                 <attribute>de.bmotionstudio.gef.editor.attribute.BAttributeEnabled</attribute>
                 <isExpressionMode>false</isExpressionMode>

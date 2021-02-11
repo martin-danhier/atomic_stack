@@ -3,7 +3,7 @@ refines atomicStackMachine
 sees atomicStackContext
 variables
     // Extended variables
-    bar_from            // Where is the element going to 
+    barFrom            // Where is the element going to 
     barTo              // Where is the element coming from
     workingElement     // Handled element
     stack               // Advanced stack : contains the position and the type of the elements
@@ -87,7 +87,7 @@ events
 
     event Bar_in extends Bar_in
     where
-        @current_floor destination_floor = elementLift
+        @current_floor destinationFloor = elementLift
         @element_on_lift elementOnLift ≠ null
     end
 
@@ -102,9 +102,9 @@ events
     // Withdraw a bar from the stack
     event Bar_withdraw extends Bar_withdraw
     where
-        @elementLift_in_the_right_floor elementLift = from_floor
+        @elementLift_in_the_right_floor elementLift = fromFloor
     then
-        @set_onLift elementOnLift ≔ stack(from_floor)(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1)
+        @set_onLift elementOnLift ≔ stack(fromFloor)(nbElementsPerFloor - card(stack(fromFloor) ⩥ {null}) + 1)
     end
 
 end

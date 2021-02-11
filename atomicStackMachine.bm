@@ -3,7 +3,7 @@ refines atomicStackAbstractMachine
 sees atomicStackContext
 variables
     // Extended variables
-    bar_from            // Where is the element going to 
+    barFrom            // Where is the element going to 
     barTo              // Where is the element coming from
     // New variables
     workingElement     // Handled element
@@ -11,19 +11,19 @@ variables
 invariants
     // Types
     @barTo_type barTo ∈ 0 ‥ nbFloors
-    @bar_from_type bar_from ∈ 0 ‥ nbFloors
+    @barFrom_type barFrom ∈ 0 ‥ nbFloors
     @stack_type stack ∈ 1‥nbFloors → (1‥nbElementsPerFloor → ELEMENTS)
     @workingElement_type workingElement ∈ ELEMENTS
     // Gluing
-    @gluing_element workingElement ≠ null ⇔ handling_element = TRUE
-    @gluing_stack ∀floor · floor ∈ dom(stack) ⇒ simple_stack(floor) = card(stack(floor) ⩥ {null}) 
+    @gluing_element workingElement ≠ null ⇔ handlingElement = TRUE
+    @gluing_stack ∀floor · floor ∈ dom(stack) ⇒ simpleStack(floor) = card(stack(floor) ⩥ {null}) 
     // In the stack, elements must always be as on the right as possible
     @elements_always_on_the_right ∀floor · floor ∈ dom(stack) ⇒ (∀elem · elem ∈ dom(stack(floor)) ∖ {nbElementsPerFloor} ⇒ (stack(floor)(elem) ≠ null ⇒ stack(floor)(elem + 1) ≠ null))
 events
     event INITIALISATION refines INITIALISATION
     then
         @barTo_init barTo ≔ 0
-        @bar_from_init bar_from ≔ 0
+        @barFrom_init barFrom ≔ 0
         @workingElement_init workingElement ≔ null
         @stack_init stack ≔ 1‥nbFloors × {1‥nbElementsPerFloor × {null}}
     end
@@ -33,7 +33,7 @@ events
     any element
     where
         @not_already_a_working_element1 barTo = 0
-        @not_already_a_working_element2 bar_from = 0
+        @not_already_a_working_element2 barFrom = 0
         @element_type element ∈ ELEMENTS ∖ {null}
         @workingElement_available workingElement = null
         @last_floor_must_be_empty stack(nbFloors) ⩥ {null} = ∅
@@ -43,15 +43,15 @@ events
 
     // Define a destination for the working element
     event Bar_in refines Bar_in
-    any destination_floor
+    any destinationFloor
     where
-        @destination_floor_type destination_floor ∈ 1‥nbFloors
+        @destinationFloor_type destinationFloor ∈ 1‥nbFloors
         @has_a_workingElement workingElement ≠ null
-        @last_floor_reserved destination_floor = 6 ⇒ bar_from ≠ 0
+        @last_floor_reserved destinationFloor = 6 ⇒ barFrom ≠ 0
         @not_already_set barTo = 0
-        @room_left_on_that_floor stack(destination_floor) ▷ {null} ≠ ∅ 
+        @room_left_on_that_floor stack(destinationFloor) ▷ {null} ≠ ∅ 
     then
-        @set_barTo barTo ≔ destination_floor
+        @set_barTo barTo ≔ destinationFloor
     end
 
     // Apply the insertion of a bar
@@ -62,22 +62,22 @@ events
     then
         @insert stack(barTo) ≔ stack(barTo)  {(nbElementsPerFloor - card(stack(barTo) ⩥ {null}) ↦ workingElement)}
         @clear_barTo barTo ≔ 0
-        @clear_bar_from bar_from ≔ 0
+        @clear_barFrom barFrom ≔ 0
         @clear_workingElement workingElement ≔ null
     end
 
     // Withdraw a bar from the stack
     event Bar_withdraw refines Bar_withdraw
-    any from_floor
+    any fromFloor
     where
-        @from_floor_type from_floor ∈ 1‥nbFloors
-        @non_empty_floor stack(from_floor) ⩥ {null} ≠ ∅
-        @not_already_withdrawing bar_from = 0
+        @fromFloor_type fromFloor ∈ 1‥nbFloors
+        @non_empty_floor stack(fromFloor) ⩥ {null} ≠ ∅
+        @not_already_withdrawing barFrom = 0
         @no_workingElement workingElement = null
     then
-        @extract workingElement ≔ stack(from_floor)(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1)
-        @set_bar_from bar_from ≔ from_floor
-        @clear stack(from_floor) ≔ stack(from_floor)  {(nbElementsPerFloor - card(stack(from_floor) ⩥ {null}) + 1 ↦ null)}
+        @extract workingElement ≔ stack(fromFloor)(nbElementsPerFloor - card(stack(fromFloor) ⩥ {null}) + 1)
+        @set_barFrom barFrom ≔ fromFloor
+        @clear stack(fromFloor) ≔ stack(fromFloor)  {(nbElementsPerFloor - card(stack(fromFloor) ⩥ {null}) + 1 ↦ null)}
     end
 
     // Remove the bar and send it away
@@ -86,7 +86,7 @@ events
         @not_already_going_somewhere barTo = 0
         @has_a_workingElement workingElement ≠ null
     then    
-        @clear_bar_from bar_from ≔ 0
+        @clear_barFrom barFrom ≔ 0
         @remove workingElement ≔ null
     end
     
